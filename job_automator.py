@@ -1,4 +1,3 @@
-import html
 import os
 import re
 import smtplib
@@ -7,15 +6,12 @@ from email import encoders
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-import requests
+import pandas as pd
 from jobspy import scrape_jobs
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 # ==================== [ CONFIGURATION & ACCOUNTS ] ====================
-TELEGRAM_BOT_TOKEN = "8235854300:AAFOpRtf1fImlWRMxqbtWRdc0uyiOYhQZEw"
-TELEGRAM_CHAT_ID = "7084743209"
-
 SENDER_EMAIL = "luna.shaftar@gmail.com"
 SENDER_PASSWORD = "wvhfhkwiujskehgh"
 CV_FILE_PATH = "Khawla_shaftar_FlowCV_Resume_2026-05-25.pdf"
@@ -183,7 +179,7 @@ def run_torino_job_system():
       else:
         print(f"❌ Failed to send to {agency['name']}.")
     else:
-        print("⏭️ Skipped.")
+      print("⏭️ Skipped.")
 
   # 2. PROCESS TORINO TECH COMPANIES (Interactive)
   for company in TORINO_TECH_COMPANIES:
@@ -196,7 +192,7 @@ def run_torino_job_system():
       else:
         print(f"❌ Failed to send to {company['name']}.")
     else:
-        print("⏭️ Skipped.")
+      print("⏭️ Skipped.")
 
   # 3. SCRAPE ONLINE LIVE POSTINGS (Interactive Review)
   print("\n🌍 Scraping online portals for live Full-Stack job posts...")
@@ -213,7 +209,7 @@ def run_torino_job_system():
           hours_old=168,
           country_indeed=country,
       )
-      if not jobs_df.empty:
+      if jobs_df is not None and not jobs_df.empty:
         all_scraped_jobs.extend(jobs_df.to_dict(orient="records"))
       time.sleep(2)
     except Exception as e:
@@ -238,7 +234,9 @@ def run_torino_job_system():
 
     if score >= MIN_MATCH_SCORE:
       detected_email = re.search(r"[\w\.-]+@[\w\.-]+\.\w+", description)
-      email_to_use = detected_email.group(0) if detected_email else "No email found in text"
+      email_to_use = (
+          detected_email.group(0) if detected_email else "No email found in text"
+      )
 
       print("\n" + "~" * 50)
       print(f"🔥 Found Online Job Match!")
@@ -250,9 +248,13 @@ def run_torino_job_system():
       print("~" * 50)
 
       if detected_email:
-        choice = input("Send CV to this job? (y/n/q to quit): ").strip().lower()
+        choice = (
+            input("Send CV to this job? (y/n/q to quit): ").strip().lower()
+        )
         if choice == "y":
-          success = send_cv_via_email(company, title, email_to_use, is_direct_target=False)
+          success = send_cv_via_email(
+              company, title, email_to_use, is_direct_target=False
+          )
           if success:
             print("✅ CV Sent successfully!")
           else:
@@ -267,3 +269,4 @@ def run_torino_job_system():
 
 if __name__ == "__main__":
   run_torino_job_system()
+
