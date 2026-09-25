@@ -14,7 +14,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 # ==================== [ CONFIGURATION & ACCOUNTS ] ====================
 SENDER_EMAIL = "luna.shaftar@gmail.com"
 SENDER_PASSWORD = "wvhfhkwiujskehgh"
-CV_FILE_PATH = "Khawla_shaftar_FlowCV_Resume_2026-05-25.pdf"
+CV_FILE_PATH = "CV_Khawla_Shaftar.pdf"
 
 MAX_APPLICATIONS_PER_DAY = 50
 MIN_MATCH_SCORE = 5.0
@@ -47,8 +47,8 @@ TORINO_TECH_COMPANIES = [
 ]
 
 MY_PROFILE = """
-Name: Khawla shaftar
-Target Roles: Junior Full-Stack Developer, Junior Web Developer, Technical Project Lead
+Name: Khawla Shaftar
+Target Roles: Junior Full-Stack Developer, Junior Web Developer, Junior Frontend Developer, Junior Backend Developer, Junior Ai Developer, Junior Software Engineer, Junior Data Engineer, Junior Data Analyst
 Location: Torino, Italy
 Languages: Arabic (Native), English (B2), Italian (B1)
 
@@ -83,38 +83,27 @@ def send_cv_via_email(
   msg["To"] = recipient_email
 
   if is_direct_target:
-    msg["Subject"] = (
-        "Candidatura spontanea Junior Full-Stack Developer - Khawla Shaftar"
-    )
-    body = f"""Gentile Team delle Risorse Umane di {company_name},
-
-Mi chiamo Khawla Shaftar, sono una Junior Full-Stack Developer e Technical Project Lead residente a Torino. 
-
-Vi contatto per presentare la mia candidatura spontanea presso la Vostra azienda, in quanto apprezzo molto i vostri progetti tecnologici e il vostro impatto nel settore IT a Torino.
-
-Ho competenze esercitate nello sviluppo web con tecnologie quali TypeScript, JavaScript, Python, PHP, SQL, Prisma ORM e Tailwind CSS, unite a solide basi di gestione tecnica dei progetti (Agile/Scrum).
-
-In allegato invio il mio Curriculum Vitae per una Vostra valutazione. Resto a completa disposizione per un eventuale colloquio conoscitivo.
-
-Cordiali saluti,
-Khawla Shaftar
-Telefono: 3278073506
-Sito web: https://lunashaftar-ship-it.github.io/website
-"""
+    msg["Subject"] = "Application for a 6-Month Web Development Internship - Khawla Shaftar"
   else:
     msg["Subject"] = f"Application for {job_title} - Khawla Shaftar"
-    body = f"""Dear Hiring Team at {company_name},
 
-I hope this email finds you well. 
+  body = f"""Dear HR Team,
 
-I recently came across your opening for the {job_title} position. Given my background as a Junior Full-Stack Developer and Technical Project Lead, I am highly interested in contributing to your team.
+I am writing to express my interest in a 6-month internship opportunity as a Junior Web Developer at {company_name}.
 
-Please find my attached resume for your review. I would welcome the opportunity to discuss how my technical stack can align with your current goals.
+I recently completed an intensive digital web development training program at Enaip Piemonte, where I gained strong foundations in modern tech stacks—including TypeScript, Tailwind CSS, Prisma ORM, and relational databases—along with core skills in HTML, CSS, JavaScript, and Python. During my studies, I also led a student development team as a Technical Project Lead, managing Agile workflows, project roadmaps, and AI-integrated coding practices.
+
+The internship can be easily set up through official educational and employment support channels (such as GOL or Enaip frameworks), and I am fully flexible regarding the arrangement, focusing primarily on gaining hands-on experience and contributing to real-world projects.
+
+I have attached my updated CV for your review. I would welcome the opportunity to discuss how my background and enthusiasm could add value to your team.
+
+Thank you for your time and consideration.
 
 Best regards,
+
 Khawla Shaftar
-Phone: 3278073506
-Website: https://lunashaftar-ship-it.github.io/website
+Phone: +39 3278073506
+Portfolio: https://lunashaftar-ship-it.github.io/website
 """
 
   msg.attach(MIMEText(body, "plain"))
@@ -139,134 +128,3 @@ Website: https://lunashaftar-ship-it.github.io/website
   except Exception as e:
     print(f"⚠️ SMTP Error for {company_name}: {e}")
     return False
-
-
-def ask_user_approval(company_name, email, job_title=""):
-  print("\n" + "=" * 50)
-  print(f"🏢 Company: {company_name}")
-  if job_title:
-    print(f"💼 Role: {job_title}")
-  print(f"📩 Target Email: {email}")
-  print("=" * 50)
-
-  choice = (
-      input("Do you want to send the CV to this company? (y/n/q to quit): ")
-      .strip()
-      .lower()
-  )
-  if choice == "y":
-    return True
-  elif choice == "q":
-    print("Exiting program...")
-    exit()
-  return False
-
-
-def run_torino_job_system():
-  print(
-      "🚀 Interactive System active. Reviewing Torino Agencies & Tech"
-      " Companies..."
-  )
-
-  # 1. PROCESS TORINO AGENCIES (Interactive)
-  for agency in ITALIAN_AGENCIES:
-    if ask_user_approval(agency["name"], agency["email"]):
-      success = send_cv_via_email(
-          agency["name"], "", agency["email"], is_direct_target=True
-      )
-      if success:
-        print(f"✅ CV Successfully Sent to {agency['name']}!")
-      else:
-        print(f"❌ Failed to send to {agency['name']}.")
-    else:
-      print("⏭️ Skipped.")
-
-  # 2. PROCESS TORINO TECH COMPANIES (Interactive)
-  for company in TORINO_TECH_COMPANIES:
-    if ask_user_approval(company["name"], company["email"]):
-      success = send_cv_via_email(
-          company["name"], "", company["email"], is_direct_target=True
-      )
-      if success:
-        print(f"✅ CV Successfully Sent to {company['name']}!")
-      else:
-        print(f"❌ Failed to send to {company['name']}.")
-    else:
-      print("⏭️ Skipped.")
-
-  # 3. SCRAPE ONLINE LIVE POSTINGS (Interactive Review)
-  print("\n🌍 Scraping online portals for live Full-Stack job posts...")
-  target_countries = ["italy", "france", "germany"]
-  all_scraped_jobs = []
-
-  for country in target_countries:
-    try:
-      jobs_df = scrape_jobs(
-          site_name=["linkedin", "indeed"],
-          search_term="Full-Stack Developer",
-          location="Torino",
-          results_wanted=10,
-          hours_old=168,
-          country_indeed=country,
-      )
-      if jobs_df is not None and not jobs_df.empty:
-        all_scraped_jobs.extend(jobs_df.to_dict(orient="records"))
-      time.sleep(2)
-    except Exception as e:
-      print(f"⚠️ Scraping error for {country}: {e}")
-      continue
-
-  if not all_scraped_jobs:
-    print("✅ Finished online sweep.")
-    return
-
-  vectorizer = TfidfVectorizer()
-
-  for row in all_scraped_jobs:
-    title = str(row.get("title", ""))
-    company = str(row.get("company", ""))
-    description = str(row.get("description", ""))
-    job_url = str(row.get("job_url", ""))
-
-    text_data = [MY_PROFILE, description]
-    count_matrix = vectorizer.fit_transform(text_data)
-    score = cosine_similarity(count_matrix)[0][1] * 100
-
-    if score >= MIN_MATCH_SCORE:
-      detected_email = re.search(r"[\w\.-]+@[\w\.-]+\.\w+", description)
-      email_to_use = (
-          detected_email.group(0) if detected_email else "No email found in text"
-      )
-
-      print("\n" + "~" * 50)
-      print(f"🔥 Found Online Job Match!")
-      print(f"🏢 Company: {company}")
-      print(f"💼 Role: {title}")
-      print(f"📊 AI Match Score: {score:.1f}%")
-      print(f"📩 Extracted Email: {email_to_use}")
-      print(f"🔗 URL: {job_url}")
-      print("~" * 50)
-
-      if detected_email:
-        choice = (
-            input("Send CV to this job? (y/n/q to quit): ").strip().lower()
-        )
-        if choice == "y":
-          success = send_cv_via_email(
-              company, title, email_to_use, is_direct_target=False
-          )
-          if success:
-            print("✅ CV Sent successfully!")
-          else:
-            print("❌ Failed to send.")
-        elif choice == "q":
-          break
-      else:
-        print("ℹ️ No direct email found for this posting, skipping auto-send.")
-
-  print(f"\n✅ All tasks completed.")
-
-
-if __name__ == "__main__":
-  run_torino_job_system()
-

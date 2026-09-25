@@ -1,2 +1,0 @@
-# XR
-Python project
